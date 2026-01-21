@@ -7,6 +7,10 @@ admin.site.site_header = 'Custom Admin Panel'
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('title','author','price','status','combine') # neyi  display etmek isteyirikse
     list_display_links = ('title','author')  # ustune tikladiqda edite gedir
+    list_filter = ('title',)  # filterlemekdir
+    search_fields = ('title',) # title__startwith => o demekdirki yazilan nedirse ancaq onu axtar
+
+    # list_editable = ('price','status')  # daxile girmeden editlemek olur
     # exclude = ('title',)  # fields-in tersidi
     # fields = ('title','author',('price','status'),) # neyi formda istifade etmek isteyirikse (()) qruplasdirmaqdir
     # fieldsets = (
@@ -28,7 +32,13 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class LessonAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('title','course')
+    list_filter = ('course',)
+    # autocomplete_fields = ('course',)
+    raw_id_fields = ('course',)
+    ordering= ('-title',)
+    list_per_page =4 
+    # pass
 
 
 admin.site.register(Course, CourseAdmin)
