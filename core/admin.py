@@ -4,6 +4,7 @@ from django.db.models import Avg
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.http import urlencode
+from django import forms
 
 admin.site.site_header = 'Custom Admin Panel'
 
@@ -43,12 +44,30 @@ class LessonAdmin(admin.ModelAdmin):
     list_per_page =4 
     # pass
 
+class PersonAdminForm(forms.ModelForm):
+    class Meta:
+        model =Person
+        fields = "__all__"
+
+        def clean_first_name(self):
+            if self.cleaned_data['first_name'] == 'admin':
+                raise forms.ValidationsError("No admin")
+            return self.cleaned_data['first_name']
+
 
 
 class PersonAdmin(admin.ModelAdmin):
     list_display = ('last_name','first_name','show_average')
     list_display_links = ('last_name','first_name')
     ordering = ('-last_name','first_name')
+    fields = ('first_name','last_name','classes')
+
+
+    def get_form(self,request, obj, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['first_name'].label = "First Name (Human)"
+        return form
+    
 
     @admin.display(description='Average')
     def show_average(self, obj):
