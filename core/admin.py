@@ -1,6 +1,6 @@
 from django.contrib import admin
-
-from core.models import Course, Lesson
+from core.models import Classes, Course, Grade, Lesson, Person
+from django.db.models import Avg
 
 admin.site.site_header = 'Custom Admin Panel'
 
@@ -41,5 +41,29 @@ class LessonAdmin(admin.ModelAdmin):
     # pass
 
 
+
+class PersonAdmin(admin.ModelAdmin):
+    list_display = ('last_name','first_name','show_average')
+    list_display_links = ('last_name','first_name')
+    ordering = ('-last_name','first_name')
+
+    @admin.display(description='Average')
+    def show_average(self, obj):
+        result =  Grade.objects.filter(person = obj).aggregate(Avg('grade'))
+        return result['grade__avg']
+    
+    
+
+class ClassesAdmin(admin.ModelAdmin):
+    pass
+
+class GradeAdmin(admin.ModelAdmin):
+    pass
+
+
+
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Lesson, LessonAdmin)
+admin.site.register(Person,PersonAdmin)
+admin.site.register(Classes,ClassesAdmin)
+admin.site.register(Grade,GradeAdmin)
