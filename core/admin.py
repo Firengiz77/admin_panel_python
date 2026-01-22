@@ -1,6 +1,9 @@
 from django.contrib import admin
 from core.models import Classes, Course, Grade, Lesson, Person
 from django.db.models import Avg
+from django.urls import reverse
+from django.utils.html import format_html
+from django.utils.http import urlencode
 
 admin.site.site_header = 'Custom Admin Panel'
 
@@ -55,7 +58,20 @@ class PersonAdmin(admin.ModelAdmin):
     
 
 class ClassesAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name','year','view_student_link')
+    list_filter = ('year',)
+
+    def view_student_link(self,obj):
+        count =  obj.person_set.count()  # burda ki person -> modelde column qeyd olunub o yeni person __set de elave edilib
+        url = (
+            reverse("admin:core_person_changelist")  # core folder name, person model name, changelist is which action we want to show
+                    + "?"
+                    + urlencode({"courses__id": f"{obj.id}"})
+                    
+        )
+        return format_html("<a href='{}'>{} Students</a>",url, count)
+
+
 
 class GradeAdmin(admin.ModelAdmin):
     pass
